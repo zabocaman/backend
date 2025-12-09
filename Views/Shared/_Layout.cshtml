@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Movie Night</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header class="cinema-header">
+        <div class="header-content">
+            <div class="logo">🍿 Movie Night</div>
+            <nav>
+                <a href="/Movies" class="nav-link">Movies</a>
+                <a href="https://www.omdbapi.com/" class="nav-link" target="_blank" rel="noreferrer">Powered by OMDb</a>
+            </nav>
+        </div>
+    </header>
+    <main role="main" class="main-container">
+        @RenderBody()
+    </main>
+    <footer class="footer">
+        <div class="footer-content">Made with 🎬 + ❤️ for film lovers.</div>
+    </footer>
+</body>
+</html>

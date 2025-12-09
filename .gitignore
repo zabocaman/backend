@@ -1,0 +1,8 @@
+**/bin/
+**/obj/
+**/.vs/
+**/Properties/launchSettings.json
+*.user
+*.db
+*.sqlite
+.env
