@@ -1,0 +1,58 @@
+@model FlightBoardViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - Pearson Airport";
+    var directionLabel = Model.Direction.Equals("arrivals", StringComparison.OrdinalIgnoreCase) ? "Arrivals" : "Departures";
+}
+
+<section class="hero">
+    <div>
+        <p class="eyebrow">Toronto Pearson • YYZ</p>
+        <h1>@directionLabel board</h1>
+        <p class="lede">Live feed powered by the Pearson flight status API. Use the airline filter to spotlight carriers like <strong>@Model.FeaturedAirline</strong>.</p>
+        <form asp-action="@directionLabel" method="get" class="filter-form">
+            <label for="airline">Airline</label>
+            <select id="airline" name="airline">
+                @foreach (var airline in Model.Airlines)
+                {
+                    <option value="@airline" @(Model.AirlineFilter.Equals(airline, StringComparison.OrdinalIgnoreCase) ? "selected" : null)>@airline</option>
+                }
+            </select>
+            <button type="submit">Filter</button>
+            <span class="featured">Featured: @Model.FeaturedAirline</span>
+        </form>
+        @if (!string.IsNullOrWhiteSpace(Model.AlertMessage))
+        {
+            <div class="alert">@Model.AlertMessage</div>
+        }
+    </div>
+</section>
+
+<section class="board">
+    <header class="board-header">
+        <div>Flight</div>
+        <div>Airline</div>
+        <div>@(Model.Direction == "arrivals" ? "From" : "To")</div>
+        <div>Time</div>
+        <div>Gate</div>
+        <div>Status</div>
+    </header>
+
+    @if (Model.HasFlights)
+    {
+        foreach (var flight in Model.Flights)
+        {
+            <article class="board-row @(flight.Airline.Equals(Model.FeaturedAirline, StringComparison.OrdinalIgnoreCase) ? "featured-row" : string.Empty)">
+                <div class="flight">@(!string.IsNullOrWhiteSpace(flight.FlightNumber) ? flight.FlightNumber : "—")</div>
+                <div class="airline">@flight.Airline</div>
+                <div class="route">@(!string.IsNullOrWhiteSpace(flight.RouteDisplay) ? flight.RouteDisplay : "Pearson")</div>
+                <div class="time">@flight.PlannedTimeDisplay</div>
+                <div class="gate">@(!string.IsNullOrWhiteSpace(flight.Gate) ? flight.Gate : "TBD")</div>
+                <div class="status">@(!string.IsNullOrWhiteSpace(flight.Status) ? flight.Status : "Scheduled")</div>
+            </article>
+        }
+    }
+    else
+    {
+        <div class="empty">No flights found for this filter. Try switching airlines.</div>
+    }
+</section>

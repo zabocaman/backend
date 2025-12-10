@@ -3,19 +3,19 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Movie Night</title>
+    <title>@ViewData["Title"] - Pearson Flights</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
-    <header class="cinema-header">
+    <header class="site-header">
         <div class="header-content">
-            <div class="logo">🍿 Movie Night</div>
+            <div class="logo">✈️ Pearson Flights</div>
             <nav>
-                <a href="/Movies" class="nav-link">Movies</a>
-                <a href="https://www.omdbapi.com/" class="nav-link" target="_blank" rel="noreferrer">Powered by OMDb</a>
+                <a href="/Flights/Arrivals" class="nav-link">Arrivals</a>
+                <a href="/Flights/Departures" class="nav-link">Departures</a>
             </nav>
         </div>
     </header>
@@ -23,7 +23,7 @@
         @RenderBody()
     </main>
     <footer class="footer">
-        <div class="footer-content">Made with 🎬 + ❤️ for film lovers.</div>
+        <div class="footer-content">Flight feed for Toronto Pearson Airport.</div>
     </footer>
 </body>
 </html>
