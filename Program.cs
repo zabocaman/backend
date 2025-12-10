@@ -1,13 +1,23 @@
 using backend.Services;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
-builder.Services.Configure<RapidApiOptions>(builder.Configuration.GetSection("RapidApi"));
-builder.Services.AddHttpClient<MovieApiService>(client =>
+builder.Services.Configure<FlightApiOptions>(builder.Configuration.GetSection("FlightApi"));
+builder.Services.AddHttpClient<FlightApiService>((sp, client) =>
 {
-    client.BaseAddress = new Uri("https://movie-database-alternative.p.rapidapi.com/");
-    client.DefaultRequestHeaders.Add("x-rapidapi-host", "movie-database-alternative.p.rapidapi.com");
+    var options = sp.GetRequiredService<IOptions<FlightApiOptions>>().Value;
+
+    if (!string.IsNullOrWhiteSpace(options.BaseUrl))
+    {
+        client.BaseAddress = new Uri(options.BaseUrl);
+    }
+
+    if (!string.IsNullOrWhiteSpace(options.Host))
+    {
+        client.DefaultRequestHeaders.Add("x-rapidapi-host", options.Host);
+    }
 });
 
 var app = builder.Build();
@@ -25,6 +35,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Movies}/{action=Index}/{id?}");
+    pattern: "{controller=Flights}/{action=Arrivals}/{id?}");
 
 app.Run();
