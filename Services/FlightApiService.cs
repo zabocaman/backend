@@ -23,14 +23,14 @@ public class FlightApiService
             throw new ArgumentException("Direction must be provided", nameof(direction));
         }
 
-        if (string.IsNullOrWhiteSpace(_options.BaseUrl) || string.IsNullOrWhiteSpace(_options.Key))
+        if (!HasLiveConfiguration())
         {
             return FlightApiResult.FromFallback(direction, "Flight API configuration is missing. Showing sample Pearson data instead.");
         }
 
         var path = string.IsNullOrWhiteSpace(_options.Path)
-            ? $"flights?airport=YYZ&direction={direction}"
-            : $"{_options.Path.TrimStart('/')}?airport=YYZ&direction={direction}";
+            ? $"flights?airport=YYZ&direction={Uri.EscapeDataString(direction)}"
+            : $"{_options.Path.TrimStart('/')}?airport=YYZ&direction={Uri.EscapeDataString(direction)}";
 
         using var request = new HttpRequestMessage(HttpMethod.Get, path);
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -52,13 +52,22 @@ public class FlightApiService
             var flights = ParseFlights(document.RootElement, direction);
             return new FlightApiResult(flights, null);
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             return FlightApiResult.FromFallback(direction, $"Live flight data unavailable: {ex.Message}");
         }
     }
 
-    private List<FlightInfo> ParseFlights(JsonElement root, string direction)
+    private bool HasLiveConfiguration() =>
+        Uri.TryCreate(_options.BaseUrl, UriKind.Absolute, out _) &&
+        !string.IsNullOrWhiteSpace(_options.Key) &&
+        !_options.Key.Equals("YOUR_RAPIDAPI_KEY_HERE", StringComparison.OrdinalIgnoreCase);
+
+    private static List<FlightInfo> ParseFlights(JsonElement root, string direction)
     {
         var items = new List<JsonElement>();
 
@@ -106,10 +115,6 @@ public class FlightApiService
                             ?? GetString(item, "scheduled")
                             ?? GetString(item, "time");
 
-            var gate = GetString(item, "gate") ?? string.Empty;
-            var status = GetString(item, "status") ?? string.Empty;
-            var terminal = GetString(item, "terminal") ?? string.Empty;
-
             flights.Add(new FlightInfo
             {
                 Airline = airline,
@@ -117,9 +122,9 @@ public class FlightApiService
                 Destination = destination,
                 Origin = origin,
                 ScheduledTimeRaw = scheduled,
-                Gate = gate,
-                Status = status,
-                Terminal = terminal,
+                Gate = GetString(item, "gate") ?? string.Empty,
+                Status = GetString(item, "status") ?? string.Empty,
+                Terminal = GetString(item, "terminal") ?? string.Empty,
                 Direction = direction
             });
         }
