@@ -8,13 +8,13 @@
     <div>
         <p class="eyebrow">Toronto Pearson • YYZ</p>
         <h1>@directionLabel board</h1>
-        <p class="lede">Live feed powered by the Pearson flight status API. Use the airline filter to spotlight carriers like <strong>@Model.FeaturedAirline</strong>.</p>
+        <p class="lede">Flight feed for Toronto Pearson Airport. Use the airline filter to spotlight carriers like <strong>@Model.FeaturedAirline</strong>.</p>
         <form asp-action="@directionLabel" method="get" class="filter-form">
             <label for="airline">Airline</label>
             <select id="airline" name="airline">
                 @foreach (var airline in Model.Airlines)
                 {
-                    <option value="@airline" @(Model.AirlineFilter.Equals(airline, StringComparison.OrdinalIgnoreCase) ? "selected" : null)>@airline</option>
+                    <option value="@airline" selected="@(Model.AirlineFilter.Equals(airline, StringComparison.OrdinalIgnoreCase))">@airline</option>
                 }
             </select>
             <button type="submit">Filter</button>
