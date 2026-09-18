@@ -1,6 +1,7 @@
 using backend.Controllers;
 using backend.Models;
 using backend.Services;
+using Xunit;
 
 namespace backend.Tests;
 
