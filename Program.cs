@@ -9,14 +9,9 @@ builder.Services.AddHttpClient<FlightApiService>((sp, client) =>
 {
     var options = sp.GetRequiredService<IOptions<FlightApiOptions>>().Value;
 
-    if (!string.IsNullOrWhiteSpace(options.BaseUrl))
+    if (Uri.TryCreate(options.BaseUrl, UriKind.Absolute, out var baseUri))
     {
-        client.BaseAddress = new Uri(options.BaseUrl);
-    }
-
-    if (!string.IsNullOrWhiteSpace(options.Host))
-    {
-        client.DefaultRequestHeaders.Add("x-rapidapi-host", options.Host);
+        client.BaseAddress = baseUri;
     }
 });
 
