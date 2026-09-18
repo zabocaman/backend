@@ -27,10 +27,14 @@ public class FlightsController : Controller
         return View("Board", BuildViewModel("Departures", "departures", airline, result));
     }
 
-    private FlightBoardViewModel BuildViewModel(string title, string direction, string? airlineFilter, FlightApiResult result)
+    internal static FlightBoardViewModel BuildViewModel(
+        string title,
+        string direction,
+        string? airlineFilter,
+        FlightApiResult result)
     {
         var flights = result.Flights.ToList();
-        var featuredAirline = "Porter Airlines";
+        const string featuredAirline = "Porter Airlines";
         var airlines = flights
             .Select(f => f.Airline)
             .Where(a => !string.IsNullOrWhiteSpace(a))
@@ -46,20 +50,19 @@ public class FlightsController : Controller
 
         airlines.Insert(0, featuredAirline);
 
-        var preferredAirline = string.IsNullOrWhiteSpace(airlineFilter) ? "All" : airlineFilter;
+        var preferredAirline = string.IsNullOrWhiteSpace(airlineFilter) ? "All" : airlineFilter.Trim();
 
-        if (!string.IsNullOrWhiteSpace(preferredAirline) && !preferredAirline.Equals("All", StringComparison.OrdinalIgnoreCase))
+        if (!preferredAirline.Equals("All", StringComparison.OrdinalIgnoreCase))
         {
             flights = flights
                 .Where(f => f.Airline.Equals(preferredAirline, StringComparison.OrdinalIgnoreCase))
                 .ToList();
         }
 
-        // Surface Porter Airlines to the top when present
         flights = flights
             .OrderByDescending(f => f.Airline.Equals(featuredAirline, StringComparison.OrdinalIgnoreCase))
-            .ThenBy(f => f.Airline)
-            .ThenBy(f => f.PlannedTimeDisplay)
+            .ThenBy(f => f.Airline, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(f => f.PlannedTimeDisplay, StringComparer.Ordinal)
             .ToList();
 
         airlines.Insert(0, "All");
